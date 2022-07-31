@@ -17,11 +17,8 @@ spec:
         image: itzg/minecraft-server
         resources:
           requests:
-            memory: 2048Mi
+            memory: 4096Mi
             cpu: 250m
-          limits:
-            memory: "4096Mi"
-            cpu: "1000m"
         ports:
           - name: metrics
             containerPort: 9225
