@@ -1,0 +1,70 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: minecraft-dep
+  namespace: minecraft
+spec:
+  selector:
+    matchLabels:
+      app: minecraft-dep 
+  template:
+    metadata:
+      labels:
+        app: minecraft-dep
+    spec:
+      containers:
+      - name: minecraft  
+        image: itzg/minecraft-server
+        resources:
+          requests:
+            memory: 2048Mi
+            cpu: 250m
+          limits:
+            memory: "4096Mi"
+            cpu: "1000m"
+        ports:
+          - name: metrics
+            containerPort: 9225
+            protocol: TCP
+          - name: minecraft-tcp
+            containerPort: 25565
+            protocol: TCP
+          - name: minecraft-udp
+            containerPort: 19132
+            protocol: UDP
+        env:
+          - name: EULA
+            value: "TRUE"
+          - name: VERSION
+            value: "1.19.1"
+          - name: TYPE
+            value: "PAPER"
+          - name: MEMORY
+            value: "4G"
+          - name: MODS
+            value: "https://ci.opencollab.dev//job/GeyserMC/job/Geyser/job/master/lastSuccessfulBuild/artifact/bootstrap/spigot/target/Geyser-Spigot.jar,https://ci.opencollab.dev/job/GeyserMC/job/Floodgate/job/master/lastSuccessfulBuild/artifact/spigot/build/libs/floodgate-spigot.jar,https://github.com/sladkoff/minecraft-prometheus-exporter/releases/download/v2.5.0/minecraft-prometheus-exporter-2.5.0.jar"
+        volumeMounts:
+          - name: minecraft-data
+            mountPath: /data
+          - name: minecraft-prom
+            mountPath: /data/plugins/PrometheusExporter/config.yml
+            subPath: config.yml
+          - name: minecraft-config
+            mountPath: /data/server.properties
+            subPath: server.properties
+          - name: minecraft-whitelist
+            mountPath: /data/whitelist.json
+            subPath: whitelist.json
+      volumes:
+        - name: minecraft-data
+          persistentVolumeClaim:
+            claimName: minecraft-data
+        - name: minecraft-prom
+          configMap:
+            name: prom-config
+        - name: minecraft-config
+          configMap:
+            name: properties
+        - name: minecraft-whitelist
+          configMap:
+            name: whitelist
