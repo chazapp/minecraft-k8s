@@ -33,7 +33,7 @@ spec:
           - name: EULA
             value: "TRUE"
           - name: VERSION
-            value: "1.19.1"
+            value: "1.19.2"
           - name: TYPE
             value: "PAPER"
           - name: MEMORY
